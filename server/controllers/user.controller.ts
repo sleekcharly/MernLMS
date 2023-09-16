@@ -98,3 +98,5 @@ export const createActivationToken = (user: any): IActivationToken => {
 
   return { token, activationCode };
 };
+
+/* activate user */
