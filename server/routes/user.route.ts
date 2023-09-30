@@ -1,3 +1,4 @@
+import { isAuthenticated } from './../middleware/auth';
 /* router configuration for user controller */
 
 // import dependencies
@@ -16,6 +17,6 @@ const userRouter = express.Router();
 userRouter.post('/registration', registerUser);
 userRouter.post('/activate-user', activateUser);
 userRouter.post('/login', loginUser);
-userRouter.get('/logout', logoutUser);
+userRouter.get('/logout', isAuthenticated, logoutUser);
 
 export default userRouter;
