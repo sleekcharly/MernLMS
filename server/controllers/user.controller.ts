@@ -6,12 +6,17 @@ import { Request, Response, NextFunction } from 'express';
 import userModel, { IUser } from '../models/user.model';
 import ErrorHandler from '../utils/ErrorHandler';
 import { CatchAsyncError } from '../middleware/catchAsyncErrors';
-import jwt, { Secret } from 'jsonwebtoken';
+import jwt, { Secret, JwtPayload } from 'jsonwebtoken';
 import ejs from 'ejs';
 import path from 'path';
 import sendMail from '../utils/sendMail';
-import { sendToken } from '../utils/jwt';
+import {
+  accessTokenOptions,
+  refreshTokenOptions,
+  sendToken,
+} from '../utils/jwt';
 import { redis } from '../utils/redis';
+import { getUserById } from '../services/user.service';
 
 // register User interface
 interface IRegistrationBody {
@@ -193,6 +198,104 @@ export const logoutUser = CatchAsyncError(
         success: true,
         message: 'Logged out successfully',
       });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  },
+);
+
+// update access token
+export const updateAccessToken = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const refresh_token = req.cookies.refresh_token as string;
+      const decoded = jwt.verify(
+        refresh_token,
+        process.env.REFRESH_TOKEN as string,
+      ) as JwtPayload;
+
+      const message = 'Could not refresh token';
+      if (!decoded) {
+        return next(new ErrorHandler(message, 400));
+      }
+
+      //   get the user session
+      const session = await redis.get(decoded.id as string);
+
+      // return error message if session does not exist
+      if (!session) {
+        return next(new ErrorHandler(message, 400));
+      }
+
+      //   get the user object from the session
+      const user = JSON.parse(session);
+
+      // sign new access token
+      const accessToken = jwt.sign(
+        { id: user._id },
+        process.env.ACCESS_TOKEN as string,
+        {
+          expiresIn: '5m',
+        },
+      );
+
+      //  create refresh token
+      const refreshToken = jwt.sign(
+        { id: user._id },
+        process.env.REFRESH_TOKEN as string,
+        {
+          expiresIn: '3d',
+        },
+      );
+
+      res.cookie('access_token', accessToken, accessTokenOptions);
+      res.cookie('refresh_token', refreshToken, refreshTokenOptions);
+
+      // send response
+      res.status(200).json({
+        status: 'success',
+        accessToken,
+      });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  },
+);
+
+// get user info
+export const getUserInfo = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userId = req.user?._id;
+      getUserById(userId, res);
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  },
+);
+
+// interface for social authentication
+interface ISocialAuthBody {
+  email: string;
+  name: string;
+  avatar: string;
+}
+
+// social authentication
+export const socialAuth = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { email, name, avatar } = req.body as ISocialAuthBody;
+      const user = await userModel.findOne({ email });
+
+      // create user if user does not exist
+      if (!user) {
+        const newUser = await userModel.create({ email, name, avatar });
+        sendToken(newUser, 200, res);
+      } else {
+        // send authenticated user if user exists
+        sendToken(user, 200, res);
+      }
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 400));
     }
