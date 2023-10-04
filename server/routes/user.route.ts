@@ -11,6 +11,9 @@ import {
   registerUser,
   socialAuth,
   updateAccessToken,
+  updatePassword,
+  updateProfilePicture,
+  updateUserInfo,
 } from '../controllers/user.controller';
 
 // assign router to userRouter variable
@@ -24,5 +27,8 @@ userRouter.get('/logout', isAuthenticated, logoutUser);
 userRouter.get('/refresh', updateAccessToken);
 userRouter.get('/me', isAuthenticated, getUserInfo);
 userRouter.post('/social-auth', socialAuth);
+userRouter.put('/update-user-info', isAuthenticated, updateUserInfo);
+userRouter.put('/update-password', isAuthenticated, updatePassword);
+userRouter.put('/update-user-avatar', isAuthenticated, updateProfilePicture);
 
 export default userRouter;
