@@ -148,3 +148,38 @@ export const getAllCourses = CatchAsyncError(
     }
   },
 );
+
+// get course content - only for valid user
+export const getCourseByUser = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      // get user's courses list from request object
+      const userCourseList = req.user?.courses;
+
+      // get courseId from request parameters
+      const courseId = req.params.id;
+
+      // check if course exists in user's courses list
+      const courseExists = userCourseList?.find(
+        (course: any) => course._id.toString() === courseId,
+      );
+      if (!courseExists) {
+        return next(
+          new ErrorHandler('You are not eligible to access this course', 404),
+        );
+      }
+
+      // retrieve course content if course exists
+      const course = await CourseModel.findById(courseId);
+      const content = course?.courseData;
+
+      // return course data
+      res.status(200).json({
+        success: true,
+        content,
+      });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  },
+);
