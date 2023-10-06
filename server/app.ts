@@ -12,6 +12,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { ErrorMiddleWare } from './middleware/error';
 import userRouter from './routes/user.route';
+import courseRouter from './routes/course.route';
 
 // body parser
 app.use(express.json({ limit: '50mb' })); // important for using cloudinary.
@@ -29,6 +30,8 @@ app.use(
 /*routes*/
 //route for registering new user
 app.use('/api/v1', userRouter);
+//route for managing course actions
+app.use('/api/v1', courseRouter);
 
 // testing API
 app.get('/test', (req: Request, res: Response, next: NextFunction) => {
