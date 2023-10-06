@@ -7,6 +7,7 @@ import ErrorHandler from '../utils/ErrorHandler';
 import cloudinary from 'cloudinary';
 import { createCourse } from '../services/course.service';
 import CourseModel from '../models/course.model';
+import { redis } from '../utils/redis';
 
 // upload course functionality
 export const uploadCourse = CatchAsyncError(
@@ -77,6 +78,71 @@ export const editCourse = CatchAsyncError(
         success: true,
         course,
       });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  },
+);
+
+// get a single course not purchased
+export const getSingleCourse = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      // retrieve and send course from redis if it exists
+      const courseId = req.params.id;
+      const courseCached = await redis.get(courseId);
+      if (courseCached) {
+        const course = JSON.parse(courseCached);
+        // return course data to frontend
+        res.status(200).json({
+          success: true,
+          course,
+        });
+      } else {
+        // retrieve course from database
+        const course = await CourseModel.findById(req.params.id).select(
+          '~courseData.videoUrl ~courseData.suggestion ~courseData.questions ~courseData.links',
+        );
+
+        // set data in redis database
+        await redis.set(courseId, JSON.stringify(course));
+
+        // return response data
+        res.status(200).json({
+          success: true,
+          course,
+        });
+      }
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  },
+);
+
+// get all courses not purchased
+export const getAllCourses = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      //  check if courses exists in the redis database
+      const coursesCached = await redis.get('allCourses');
+      if (coursesCached) {
+        const courses = JSON.parse(coursesCached);
+        res.status(200).json({ success: true, courses });
+      } else {
+        // get all courses not purchased
+        const courses = await CourseModel.find().select(
+          '~courseData.videoUrl ~courseData.suggestion ~courseData.questions ~courseData.links',
+        );
+
+        // set courses in redis database
+        await redis.set('allCourses', JSON.stringify(courses));
+
+        // send response
+        res.status(200).json({
+          success: true,
+          courses,
+        });
+      }
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 500));
     }
