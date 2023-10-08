@@ -2,13 +2,14 @@
 
 // import dependencies
 import mongoose, { Document, Model, Schema } from 'mongoose';
+import { IUser } from './user.model';
 
 /* setup required interfaces for course model structure */
 // comment interface
 interface IComment extends Document {
-  user: object;
-  comment: string;
-  commentReplies?: IComment[];
+  user: IUser;
+  question: string;
+  questionReplies?: IComment[];
 }
 
 // reviews interface
@@ -77,8 +78,8 @@ const linkSchema = new Schema<ILink>({
 // Comment schema
 const commentSchema = new Schema<IComment>({
   user: Object,
-  comment: String,
-  commentReplies: [Object],
+  question: String,
+  questionReplies: [Object],
 });
 
 // Course Data Schema
