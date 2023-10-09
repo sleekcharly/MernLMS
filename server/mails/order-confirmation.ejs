@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.8" />
+    <title>Order Confirmation</title>
+  </head>
+  <body>
+    <div>
+      <div>
+        <h1>Your MernLMS order is confirmed!</h1>
+        <p>And we're just as excited as you are.</p>
+      </div>
+      <br />
+      <br />
+      <div>
+        <h4>Here's what you ordered:</h4>
+        <table style="border-bottom: 1px solid #0000002f">
+          <tr>
+            <td>Order #: <%= order._id %></td>
+            <td>Order Date: <%= order.date %></td>
+          </tr>
+        </table>
+        <table style="width: 90%; margin: auto; display: block">
+          <tr>
+            <td>Item</td>
+            <td>Qty</td>
+            <td>cost</td>
+          </tr>
+        </table>
+
+        <table>
+          <tr>
+            <td><%= order.name %></td>
+            <td>1</td>
+            <td><%= order.price %></td>
+          </tr>
+        </table>
+
+        <table style="border-top: 1px solid #00000029">
+          <tr>
+            <td>Subtotal:</td>
+            <td><%= order.price %></td>
+          </tr>
+        </table>
+
+        <table>
+          <tr>
+            <td>Total:</td>
+            <td>$ <%= order.price %></td>
+          </tr>
+        </table>
+      </div>
+
+      <div>
+        <p>
+          If you have any questions, please contact our support team at
+          <a href="mailto:support@mernlms.com">support@mernlms.com</a>
+        </p>
+        <p>&copy; 2023 MernLMS. All rights reserved.</p>
+      </div>
+    </div>
+  </body>
+</html>

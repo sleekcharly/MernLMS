@@ -13,6 +13,7 @@ import cookieParser from 'cookie-parser';
 import { ErrorMiddleWare } from './middleware/error';
 import userRouter from './routes/user.route';
 import courseRouter from './routes/course.route';
+import orderRouter from './routes/order.route';
 
 // body parser
 app.use(express.json({ limit: '50mb' })); // important for using cloudinary.
@@ -32,6 +33,8 @@ app.use(
 app.use('/api/v1', userRouter);
 //route for managing course actions
 app.use('/api/v1', courseRouter);
+// route for managing order actions
+app.use('/api/v1', orderRouter);
 
 // testing API
 app.get('/test', (req: Request, res: Response, next: NextFunction) => {
