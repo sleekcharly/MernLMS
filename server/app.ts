@@ -14,6 +14,7 @@ import { ErrorMiddleWare } from './middleware/error';
 import userRouter from './routes/user.route';
 import courseRouter from './routes/course.route';
 import orderRouter from './routes/order.route';
+import notificationRouter from './routes/notification.route';
 
 // body parser
 app.use(express.json({ limit: '50mb' })); // important for using cloudinary.
@@ -35,6 +36,8 @@ app.use('/api/v1', userRouter);
 app.use('/api/v1', courseRouter);
 // route for managing order actions
 app.use('/api/v1', orderRouter);
+// route for managing notifications actions
+app.use('/api/v1', notificationRouter);
 
 // testing API
 app.get('/test', (req: Request, res: Response, next: NextFunction) => {
