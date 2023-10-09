@@ -6,6 +6,9 @@ import { CatchAsyncError } from '../middleware/catchAsyncErrors';
 import ErrorHandler from '../utils/ErrorHandler';
 import NotificationModel from '../models/notificationModel';
 
+// initialize cron job
+var cron = require('node-cron');
+
 // get al notifications - only for admin users
 export const getNotifications = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -60,3 +63,16 @@ export const updateNotification = CatchAsyncError(
     }
   },
 );
+
+// delete notification -- only admin
+cron.schedule('0 0 0 * * *', async () => {
+  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+
+  // delete read notifications more tha thirty days ago
+  await NotificationModel.deleteMany({
+    status: 'read',
+    createdAt: { $lt: thirtyDaysAgo },
+  });
+
+  console.log('Deleted read notifications');
+});
