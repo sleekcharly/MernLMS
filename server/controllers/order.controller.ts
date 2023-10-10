@@ -7,7 +7,7 @@ import ErrorHandler from '../utils/ErrorHandler';
 import { IOrder } from '../models/orderModel';
 import userModel from '../models/user.model';
 import CourseModel from '../models/course.model';
-import { newOrder } from '../services/order.service';
+import { getAllOrdersService, newOrder } from '../services/order.service';
 import ejs from 'ejs';
 import path from 'path';
 import sendMail from '../utils/sendMail';
@@ -103,6 +103,18 @@ export const createOrder = CatchAsyncError(
 
       // create order
       newOrder(data, res, next);
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  },
+);
+
+// get all orders function only for admin
+export const getAllOrders = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      // get all orders
+      getAllOrdersService(res);
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 500));
     }

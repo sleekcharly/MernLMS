@@ -12,6 +12,7 @@ import {
   getSingleCourse,
   replyToReview,
   uploadCourse,
+  getCourses,
 } from '../controllers/course.controller';
 
 //  middlewares
@@ -36,7 +37,7 @@ courseRouter.put(
 );
 // retrieving courses not purchased
 courseRouter.get('/get-course/:id', getSingleCourse);
-courseRouter.get('/get-courses', getAllCourses);
+courseRouter.get('/get-courses', getCourses);
 
 courseRouter.get('/get-course-content/:id', isAuthenticated, getCourseByUser);
 
@@ -47,10 +48,17 @@ courseRouter.put('/add-answer', isAuthenticated, addAnswer);
 courseRouter.put('/add-review/:id', isAuthenticated, addReview);
 
 courseRouter.put(
-  '/add-reply/',
+  '/add-reply',
   isAuthenticated,
   authorizeRoles('admin'),
   replyToReview,
+);
+
+courseRouter.get(
+  '/get-all-courses',
+  isAuthenticated,
+  authorizeRoles('admin'),
+  getAllCourses,
 );
 
 // export router

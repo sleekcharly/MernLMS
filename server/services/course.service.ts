@@ -16,3 +16,15 @@ export const createCourse = CatchAsyncError(
     });
   },
 );
+
+// Get all courses
+export const getAllCoursesService = async (res: Response) => {
+  // get all users from database
+  const courses = await CourseModel.find().sort({ createdAt: -1 });
+
+  // send response to frontend
+  res.status(201).json({
+    success: true,
+    courses,
+  });
+};
