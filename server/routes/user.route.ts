@@ -15,6 +15,7 @@ import {
   updatePassword,
   updateProfilePicture,
   updateUserInfo,
+  updateUserRole,
 } from '../controllers/user.controller';
 
 // assign router to userRouter variable
@@ -37,5 +38,10 @@ userRouter.get(
   authorizeRoles('admin'),
   getAllUsers,
 );
-
+userRouter.put(
+  '/update-user-role',
+  isAuthenticated,
+  authorizeRoles('admin'),
+  updateUserRole,
+);
 export default userRouter;

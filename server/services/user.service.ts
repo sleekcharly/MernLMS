@@ -29,3 +29,19 @@ export const getAllUsersService = async (res: Response) => {
     users,
   });
 };
+
+// update user role service
+export const updateUserRoleServices = async (
+  res: Response,
+  id: string,
+  role: string,
+) => {
+  // update role and retrieve user from database
+  const user = await userModel.findByIdAndUpdate(id, { role }, { new: true });
+
+  // return response with user object
+  res.status(201).json({
+    success: true,
+    user,
+  });
+};
