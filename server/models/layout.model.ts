@@ -1,7 +1,7 @@
 /* model for frontend layout data */
 
 // import dependencies
-import { Schema, Model, Document } from 'mongoose';
+import mongoose, { Schema, Model, Document } from 'mongoose';
 
 // setup interfaces
 interface FaqItem extends Document {
@@ -56,6 +56,6 @@ const layoutSchema = new Schema<Layout>({
 });
 
 // create and export model
-const LayoutModel = Model<Layout>('Layout', layoutSchema);
+const LayoutModel: Model<Layout> = mongoose.model('Layout', layoutSchema);
 
 export default LayoutModel;

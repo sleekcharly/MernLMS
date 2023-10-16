@@ -16,6 +16,7 @@ import courseRouter from './routes/course.route';
 import orderRouter from './routes/order.route';
 import notificationRouter from './routes/notification.route';
 import analyticsRouter from './routes/analytics.route';
+import layoutRouter from './routes/layout.route';
 
 // body parser
 app.use(express.json({ limit: '50mb' })); // important for using cloudinary.
@@ -41,6 +42,8 @@ app.use('/api/v1', orderRouter);
 app.use('/api/v1', notificationRouter);
 // route for managing analytics
 app.use('/api/v1', analyticsRouter);
+// route for managing layout
+app.use('/api/v1', layoutRouter);
 
 // testing API
 app.get('/test', (req: Request, res: Response, next: NextFunction) => {
