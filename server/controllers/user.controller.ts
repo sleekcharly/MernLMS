@@ -229,7 +229,9 @@ export const updateAccessToken = CatchAsyncError(
 
       // return error message if session does not exist
       if (!session) {
-        return next(new ErrorHandler(message, 400));
+        return next(
+          new ErrorHandler('Please login to access this resource', 400),
+        );
       }
 
       //   get the user object from the session
@@ -259,6 +261,7 @@ export const updateAccessToken = CatchAsyncError(
       res.cookie('access_token', accessToken, accessTokenOptions);
       res.cookie('refresh_token', refreshToken, refreshTokenOptions);
 
+      await redis.set(user._id, JSON.stringify(user), 'EX', 604800); // 7days
       // send response
       res.status(200).json({
         status: 'success',

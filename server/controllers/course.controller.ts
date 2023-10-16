@@ -110,7 +110,7 @@ export const getSingleCourse = CatchAsyncError(
         );
 
         // set data in redis database
-        await redis.set(courseId, JSON.stringify(course));
+        await redis.set(courseId, JSON.stringify(course), 'EX', 604800); // 7 days expiry
 
         // return response data
         res.status(200).json({

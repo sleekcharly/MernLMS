@@ -31,7 +31,9 @@ export const isAuthenticated = CatchAsyncError(
 
     // if user does not exist in redis return error
     if (!user) {
-      return next(new ErrorHandler('user not found', 400));
+      return next(
+        new ErrorHandler('Please login to access this resource', 400),
+      );
     }
 
     // set user in req object
